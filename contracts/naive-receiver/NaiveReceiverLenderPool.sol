@@ -4,6 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
+import "hardhat/console.sol";
 /**
  * @title NaiveReceiverLenderPool
  * @author Damn Vulnerable DeFi (https://damnvulnerabledefi.xyz)
@@ -20,6 +21,7 @@ contract NaiveReceiverLenderPool is ReentrancyGuard {
 
     function flashLoan(address borrower, uint256 borrowAmount) external nonReentrant {
 
+        // console.log(borrowAmount);
         uint256 balanceBefore = address(this).balance;
         require(balanceBefore >= borrowAmount, "Not enough ETH in pool");
 
@@ -33,7 +35,9 @@ contract NaiveReceiverLenderPool is ReentrancyGuard {
             ),
             borrowAmount
         );
-        
+        // this may not work if reverted
+        // console.log(returnData.length);
+
         require(
             address(this).balance >= balanceBefore + FIXED_FEE,
             "Flash loan hasn't been paid back"
@@ -41,5 +45,6 @@ contract NaiveReceiverLenderPool is ReentrancyGuard {
     }
 
     // Allow deposits of ETH
+    // deposit function is no longer necessary
     receive () external payable {}
 }

